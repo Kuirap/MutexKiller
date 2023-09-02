@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,13 +17,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 namespace MutexKiller
 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
+    /// 
+
     public partial class MainWindow : Window
     {
+        private static CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         [StructLayout(LayoutKind.Sequential)]
         public struct PROCESS_MEMORY_COUNTERS_EX
         {
@@ -103,7 +108,7 @@ namespace MutexKiller
                     string enteredData = addEntryWindow.EnteredData;
                     Process.Start(enteredData);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show("Ошибка: " + ex.Message);
                 }
@@ -124,49 +129,57 @@ namespace MutexKiller
             // Получение выбранного процесса
             if (ProcessListBox.SelectedItem != null)
             {
-                string selectedProcessName = ProcessListBox.SelectedItem.ToString();
-                selectedProcess = Process.GetProcessesByName(selectedProcessName)[0];
-                Process[] processes = Process.GetProcessesByName(selectedProcessName);
-                Process process = processes[0];
                 try
                 {
-                    processLocation = process.MainModule.FileName;
+                    string selectedProcessName = ProcessListBox.SelectedItem.ToString();
+                    selectedProcess = Process.GetProcessesByName(selectedProcessName)[0];
+                    Process[] processes = Process.GetProcessesByName(selectedProcessName);
+                    Process process = processes[0];
+                    try
+                    {
+                        processLocation = process.MainModule.FileName;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Получение пути: " + ex.Message);
+                    }
+
+                    try
+                    {
+                        threads = selectedProcess.Threads;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Получение потоков: " + ex.Message);
+                    }
+
+                    try
+                    {
+                        modules = selectedProcess.Modules;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Получение Модулей: " + ex.Message);
+                    }
+
+                    try
+                    {
+                        PROCESS_MEMORY_COUNTERS_EX counters;
+                        IntPtr processHandle = OpenProcess(ProcessAccessFlags.QueryInformation, false, (uint)process.Id);
+                        GetProcessMemoryInfo(processHandle, out counters, (uint)Marshal.SizeOf<PROCESS_MEMORY_COUNTERS_EX>());
+                        ulong workingSet = counters.WorkingSetSize;
+                        CloseHandle(processHandle);
+                    }
+                    catch (Exception ex)
+                    {
+                        EfficiencyBox.Text = "Не удалось получить информацию" + ex.Message;
+                    }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Получение пути: " + ex.Message);
+                    MessageBox.Show(ex.Message);
                 }
 
-                try
-                {
-                    threads = selectedProcess.Threads;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Получение потоков: " + ex.Message);
-                }
-
-                try
-                {
-                    modules = selectedProcess.Modules;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Получение Модулей: " + ex.Message);
-                }
-
-                try
-                {
-                    PROCESS_MEMORY_COUNTERS_EX counters;
-                    IntPtr processHandle = OpenProcess(ProcessAccessFlags.QueryInformation, false, (uint)process.Id);
-                    GetProcessMemoryInfo(processHandle, out counters, (uint)Marshal.SizeOf<PROCESS_MEMORY_COUNTERS_EX>());
-                    ulong workingSet = counters.WorkingSetSize;
-                    CloseHandle(processHandle);
-                }
-                catch (Exception ex)
-                {
-                    EfficiencyBox.Text = "Не удалось получить информацию" + ex.Message;
-                }
             }
 
             // Добавление имен подпроцессов в ListBox для подпроцессов
@@ -191,7 +204,7 @@ namespace MutexKiller
         }
 
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void KillItem_Click(object sender, RoutedEventArgs e)
         {
             string selectedProcessName = ProcessListBox.SelectedItem.ToString();
             Process selectedProcess = Process.GetProcessesByName(selectedProcessName)[0];
@@ -207,6 +220,61 @@ namespace MutexKiller
             {
                 MessageBox.Show("Ошибка при остановке процесса: " + ex.Message);
             }
+        }
+        private async void IsolationItem_Click(object sender, RoutedEventArgs e)
+        {
+            string selectedProcessName = ProcessListBox.SelectedItem.ToString();
+            Process selectedProcess = Process.GetProcessesByName(selectedProcessName)[0];
+            try
+            {
+                IsolationProccessListBox.Items.Add(selectedProcessName);
+                await Task.Run(() =>
+                {
+                    while (!cancellationTokenSource.Token.IsCancellationRequested)
+                    {
+                        // Проверяем, запущен ли процесс
+                        Process[] processes = Process.GetProcessesByName(selectedProcessName);
+                        if (processes.Length > 0)
+                        {
+                            // Процесс найден, завершаем его
+                            foreach (Process process in processes)
+                            {
+                                try
+                                {
+                                    process.Kill();
+                                    Console.WriteLine($"Процесс {selectedProcessName} был завершен.");
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Не удалось завершить процесс {selectedProcessName}: {ex.Message}");
+                                }
+                            }
+                        }
+
+                        // Добавьте задержку, чтобы не нагружать процессор
+                        System.Threading.Thread.Sleep(1000);
+                    }
+                }, cancellationTokenSource.Token);
+
+                Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+        private void DeleteZone_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                cancellationTokenSource.Cancel();
+                IsolationProccessListBox.Items.Remove(IsolationProccessListBox.SelectedItem);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
     }
 }

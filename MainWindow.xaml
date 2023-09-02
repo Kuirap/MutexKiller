@@ -48,18 +48,38 @@
         </Grid>
 
         <Grid Grid.Row="1">
-            <ListBox Name="ProcessListBox" SelectionChanged="ProcessListBox_SelectionChanged">
-                <ListBox.Resources>
-                    <ContextMenu x:Key="cm">
-                        <MenuItem Header="Остановить" Click="MenuItem_Click" />
-                    </ContextMenu>
-                </ListBox.Resources>
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="ContextMenu" Value="{StaticResource cm}" />
-                    </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
+            <TabControl>
+                <TabItem Header="Процессы"> 
+                    <ListBox Name="ProcessListBox" SelectionChanged="ProcessListBox_SelectionChanged">
+                        <ListBox.Resources>
+                            <ContextMenu x:Key="cm">
+                                <MenuItem Header="Остановить" Click="KillItem_Click" />
+                                <MenuItem Header="Карантин" Click="IsolationItem_Click" />
+                            </ContextMenu>
+                        </ListBox.Resources>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="ContextMenu" Value="{StaticResource cm}" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </TabItem>
+                <TabItem Header="Карантин">
+                    <ListBox Name="IsolationProccessListBox">
+                        <ListBox.Resources>
+                            <ContextMenu x:Key="cm">
+                                <MenuItem Header="Удалить" Click="DeleteZone_Click"/>
+                            </ContextMenu>
+                        </ListBox.Resources>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="ContextMenu" Value="{StaticResource cm}" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </TabItem>
+            </TabControl>
+
         </Grid>
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
