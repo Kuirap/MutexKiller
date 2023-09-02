@@ -1,0 +1,16 @@
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\bin\Debug\MutexKiller.exe.config
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\bin\Debug\MutexKiller.exe
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\bin\Debug\MutexKiller.pdb
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.csproj.AssemblyReference.cache
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.csproj.SuggestedBindingRedirects.cache
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MainWindow.g.cs
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\App.g.cs
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller_MarkupCompile.cache
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller_MarkupCompile.lref
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MainWindow.baml
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.g.resources
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.Properties.Resources.resources
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.csproj.GenerateResource.cache
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.csproj.CoreCompileInputs.cache
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.exe
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.pdb

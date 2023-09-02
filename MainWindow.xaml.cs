@@ -1,0 +1,196 @@
+﻿using System;
+using System.Diagnostics;
+using Microsoft.Win32.SafeHandles;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace MutexKiller
+{
+    /// <summary>
+    /// Логика взаимодействия для MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PROCESS_MEMORY_COUNTERS_EX
+        {
+            public uint cb;
+            public uint PageFaultCount;
+            public ulong PeakWorkingSetSize;
+            public ulong WorkingSetSize;
+            public ulong QuotaPeakPagedPoolUsage;
+            public ulong QuotaPagedPoolUsage;
+            public ulong QuotaPeakNonPagedPoolUsage;
+            public ulong QuotaNonPagedPoolUsage;
+            public ulong PagefileUsage;
+            public ulong PeakPagefileUsage;
+            public ulong PrivateUsage;
+        }
+
+        [DllImport("kernel32.dll")]
+        public static extern bool GetProcessMemoryInfo(IntPtr hProcess, out PROCESS_MEMORY_COUNTERS_EX counters, uint size);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, uint processId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseHandle(IntPtr hObject);
+
+        [Flags]
+        public enum ProcessAccessFlags : uint
+        {
+            QueryInformation = 0x0400
+        }
+
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void ExitBut_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void MinimizeBut_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void Toolbar_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
+        }
+
+        private void Start()
+        {
+            ProcessListBox.Items.Clear();
+            Process[] processes = Process.GetProcesses();
+            Array.Sort(processes, (x, y) => string.Compare(x.ProcessName, y.ProcessName));
+            foreach (Process process in processes)
+            {
+                ProcessListBox.Items.Add(process.ProcessName);
+            }
+        }
+        private void StartBut_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Start();
+        }
+
+        private void ProcessListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ModulsProcessListBox.Items.Clear();
+            ThreadsProcessListBox.Items.Clear();
+            InfoBox.Clear();
+            ProcessModuleCollection modules = null;
+            Process selectedProcess = null;
+            ProcessThreadCollection threads = null;
+            string processLocation = null;
+
+            // Получение выбранного процесса
+            if (ProcessListBox.SelectedItem != null)
+            {
+                string selectedProcessName = ProcessListBox.SelectedItem.ToString();
+                selectedProcess = Process.GetProcessesByName(selectedProcessName)[0];
+                Process[] processes = Process.GetProcessesByName(selectedProcessName);
+                Process process = processes[0];
+                try
+                {
+                    processLocation = process.MainModule.FileName;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Получение пути: " + ex.Message);
+                }
+
+                try
+                {
+                    threads = selectedProcess.Threads;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Получение потоков: " + ex.Message);
+                }
+
+                try
+                {
+                    modules = selectedProcess.Modules;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Получение Модулей: " + ex.Message);
+                }
+
+                try
+                {
+                    PROCESS_MEMORY_COUNTERS_EX counters;
+                    IntPtr processHandle = OpenProcess(ProcessAccessFlags.QueryInformation, false, (uint)process.Id);
+                    GetProcessMemoryInfo(processHandle, out counters, (uint)Marshal.SizeOf<PROCESS_MEMORY_COUNTERS_EX>());
+                    ulong workingSet = counters.WorkingSetSize;
+                    CloseHandle(processHandle);
+                }
+                catch (Exception ex)
+                {
+                    EfficiencyBox.Text = "Не удалось получить информацию" + ex.Message;
+                }
+            }
+
+            // Добавление имен подпроцессов в ListBox для подпроцессов
+            if (modules != null)
+            {
+                foreach (ProcessModule module in modules)
+                {
+                    ModulsProcessListBox.Items.Add(module.ModuleName);
+                }
+            }
+            if (threads != null)
+            {
+                foreach (ProcessThread thread in threads)
+                {
+                    ThreadsProcessListBox.Items.Add("Thread ID: " + thread.Id);
+                }
+            }
+            if (processLocation != null)
+            {
+                InfoBox.Text = processLocation;
+            }
+        }
+
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            string selectedProcessName = ProcessListBox.SelectedItem.ToString();
+            Process selectedProcess = Process.GetProcessesByName(selectedProcessName)[0];
+
+            // Попытка остановить выбранный процесс
+            try
+            {
+                selectedProcess.Kill();
+                MessageBox.Show("Процесс с именем " + selectedProcessName + " остановлен.");
+                Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при остановке процесса: " + ex.Message);
+            }
+        }
+
+    }
+}

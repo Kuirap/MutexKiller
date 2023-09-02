@@ -1,0 +1,100 @@
+﻿<Window x:Class="MutexKiller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MutexKiller"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="350" WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Name="Toolbar" Grid.ColumnSpan="2" MouseDown="Toolbar_MouseDown" Background="Transparent" >
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Image Name="MinimizeBut" Height="20" Width="20" Margin="5,0,5,0" MouseDown="MinimizeBut_MouseDown">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Source/minus.png"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=MinimizeBut}" Value="True">
+                                    <Setter Property="Source" Value="Source/activeminus.png"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                <Image Name="ExitBut" Height="20" Width="20" Margin="5,0,5,0" MouseDown="ExitBut_MouseDown">
+                    <Image.Style>
+                        <Style TargetType="{x:Type Image}">
+                            <Setter Property="Source" Value="Source/exit.png"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=ExitBut}" Value="True">
+                                    <Setter Property="Source" Value="Source/activeexit.png"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock>MutexKiller</TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <ListBox Name="ProcessListBox" SelectionChanged="ProcessListBox_SelectionChanged">
+                <ListBox.Resources>
+                    <ContextMenu x:Key="cm">
+                        <MenuItem Header="Остановить" Click="MenuItem_Click" />
+                    </ContextMenu>
+                </ListBox.Resources>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="ContextMenu" Value="{StaticResource cm}" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TabControl>
+                <TabItem Header="Модули">
+                    <Grid>
+                        <ListBox Name="ModulsProcessListBox"></ListBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Потоки">
+                    <Grid>
+                        <ListBox Name="ThreadsProcessListBox"></ListBox>
+                    </Grid>
+
+                </TabItem>
+                <TabItem Header="Информация">
+                    <Grid>
+                        <TextBox x:Name="InfoBox" VerticalScrollBarVisibility="Auto" IsReadOnly="True"></TextBox>
+                    </Grid>
+
+                </TabItem>
+            </TabControl>
+        </Grid>
+        <Grid Grid.Row="3">
+            <StackPanel Orientation="Horizontal">
+                <Image Name="StartBut" Source="Source/start.png" Height="30" Width="30" Margin="10" MouseDown="StartBut_MouseDown"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Image Name="SattingsBut" Source="Source/settings.png" Height="30" Width="30" Margin="10"/>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="4">
+            <TextBox x:Name="EfficiencyBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></TextBox>
+        </Grid>
+    </Grid>
+</Window>
