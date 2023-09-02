@@ -93,6 +93,23 @@ namespace MutexKiller
         {
             Start();
         }
+        private void AddBut_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var addEntryWindow = new StartProccessWindow();
+            if (addEntryWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    string enteredData = addEntryWindow.EnteredData;
+                    Process.Start(enteredData);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Ошибка: " + ex.Message);
+                }
+
+            }
+        }
 
         private void ProcessListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -191,6 +208,5 @@ namespace MutexKiller
                 MessageBox.Show("Ошибка при остановке процесса: " + ex.Message);
             }
         }
-
     }
 }

@@ -1,0 +1,16 @@
+﻿<Window x:Class="MutexKiller.StartProccessWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Height="120" Width="200" WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Border BorderBrush="Black" BorderThickness="1">
+        <Grid>
+        <TextBlock Text="Введите название процесса:" VerticalAlignment="Top" Margin="10"/>
+        <TextBox Name="InputTextBox" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="10"
+         KeyDown="InputTextBox_KeyDown"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10">
+            <Button Content="Отмена" Click="CancelButton_Click" Margin="5"/>
+            <Button Content="Ок" Click="OkButton_Click" IsDefault="True" Margin="5"/>
+        </StackPanel>
+        </Grid>
+    </Border>
+</Window>

@@ -14,3 +14,5 @@ C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.csproj
 C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.csproj.CoreCompileInputs.cache
 C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.exe
 C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\MutexKiller.pdb
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\StartProccessWindow.baml
+C:\Users\ilyak\source\repos\MutexKiller\MutexKiller\obj\Debug\StartProccessWindow.g.cs
