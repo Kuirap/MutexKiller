@@ -10,3 +10,7 @@
 Остановка процессов
 
 ![image](https://github.com/Kuirap/MutexKiller/assets/120246804/77c33ecb-48ca-417a-888d-bcbee40ecd8e)
+
+Запуск процессов
+
+![image](https://github.com/Kuirap/MutexKiller/assets/120246804/735e2313-9160-444c-a70f-e62cd44a3e9d)
