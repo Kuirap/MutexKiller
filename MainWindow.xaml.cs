@@ -232,11 +232,11 @@ namespace MutexKiller
                 {
                     while (!cancellationTokenSource.Token.IsCancellationRequested)
                     {
-                        // Проверяем, запущен ли процесс
+
                         Process[] processes = Process.GetProcessesByName(selectedProcessName);
                         if (processes.Length > 0)
                         {
-                            // Процесс найден, завершаем его
+
                             foreach (Process process in processes)
                             {
                                 try
@@ -251,7 +251,7 @@ namespace MutexKiller
                             }
                         }
 
-                        // Добавьте задержку, чтобы не нагружать процессор
+                        // Задержка
                         System.Threading.Thread.Sleep(1000);
                     }
                 }, cancellationTokenSource.Token);
