@@ -16,7 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using System.Management;
 
 namespace MutexKiller
 {
@@ -120,11 +120,10 @@ namespace MutexKiller
         {
             ModulsProcessListBox.Items.Clear();
             ThreadsProcessListBox.Items.Clear();
-            InfoBox.Clear();
+            InfoBox.Text ="";
             ProcessModuleCollection modules = null;
             Process selectedProcess = null;
             ProcessThreadCollection threads = null;
-            string processLocation = null;
 
             // Получение выбранного процесса
             if (ProcessListBox.SelectedItem != null)
@@ -137,11 +136,11 @@ namespace MutexKiller
                     Process process = processes[0];
                     try
                     {
-                        processLocation = process.MainModule.FileName;
+                        ProcessInfo();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Получение пути: " + ex.Message);
+                        MessageBox.Show(ex.Message);
                     }
 
                     try
@@ -197,11 +196,39 @@ namespace MutexKiller
                     ThreadsProcessListBox.Items.Add("Thread ID: " + thread.Id);
                 }
             }
-            if (processLocation != null)
+        }
+
+        private void ProcessInfo()
+        {
+            Process[] processes = Process.GetProcesses();
+            InfoBox.AppendText("\nЗагрузка процессора:\n");
+            PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            float cpuUsage = cpuCounter.NextValue();
+            InfoBox.AppendText($"Использование процессора: {cpuUsage}%\n");
+
+            InfoBox.AppendText("\nИнформация о системе:\n");
+            var query = new ObjectQuery("SELECT * FROM Win32_OperatingSystem");
+            var searcher = new ManagementObjectSearcher(query);
+            foreach (ManagementObject os in searcher.Get())
             {
-                InfoBox.Text = processLocation;
+                InfoBox.AppendText($"Операционная система: {os["Caption"]}\n");
+                InfoBox.AppendText($"Версия операционной системы: {os["Version"]}\n");
+                InfoBox.AppendText($"Архитектура процессора: {os["OSArchitecture"]}\n");
+                InfoBox.AppendText($"Общая физическая память: {os["TotalVisibleMemorySize"]} КБ\n");
+            }
+
+            InfoBox.AppendText("\nСобытия из журнала приложений (первые 5):\n");
+            EventLog eventLog = new EventLog("Application");
+            int count = 0;
+            foreach (EventLogEntry entry in eventLog.Entries)
+            {
+                InfoBox.AppendText($"Событие: {entry.EntryType}, Время: {entry.TimeGenerated}, Сообщение: {entry.Message}\n");
+                count++;
+                if (count >= 5) break;
             }
         }
+
+
 
 
         private void KillItem_Click(object sender, RoutedEventArgs e)
@@ -225,8 +252,9 @@ namespace MutexKiller
         {
             string selectedProcessName = ProcessListBox.SelectedItem.ToString();
             Process selectedProcess = Process.GetProcessesByName(selectedProcessName)[0];
-            try
-            {
+               
+            //try
+            //{
                 IsolationProccessListBox.Items.Add(selectedProcessName);
                 await Task.Run(() =>
                 {
@@ -257,11 +285,11 @@ namespace MutexKiller
                 }, cancellationTokenSource.Token);
 
                 Start();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message);
+            //}
         }
         private void DeleteZone_Click(object sender, RoutedEventArgs e)
         {

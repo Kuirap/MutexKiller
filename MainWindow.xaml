@@ -99,7 +99,7 @@
                 </TabItem>
                 <TabItem Header="Информация">
                     <Grid>
-                        <TextBox x:Name="InfoBox" VerticalScrollBarVisibility="Auto" IsReadOnly="True"></TextBox>
+                        <TextBox x:Name="InfoBox" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True"></TextBox>
                     </Grid>
 
                 </TabItem>
@@ -109,7 +109,7 @@
             <StackPanel Orientation="Horizontal">
                 <Image Name="StartBut" Source="Source/start.png" Height="30" Width="30" Margin="10" MouseDown="StartBut_MouseDown"/>
                 <Image Name="AddBut" Source="Source/add.png" Height="30" Width="30" Margin="10" MouseDown="AddBut_MouseDown"/>
-                <TextBox Name="SearthBox" Height="30" Width="100" Margin="0"></TextBox>
+                <TextBox Name="SearthBox" Height="20" Width="100" Margin="0"></TextBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Image Name="SattingsBut" Source="Source/settings.png" Height="30" Width="30" Margin="10"/>
