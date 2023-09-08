@@ -219,7 +219,7 @@ namespace MutexKiller
 
             InfoBox.AppendText("\nСобытия из журнала приложений (первые 5):\n");
             EventLog eventLog = new EventLog("Application");
-            int count = 0;
+            int count = 0;  
             foreach (EventLogEntry entry in eventLog.Entries)
             {
                 InfoBox.AppendText($"Событие: {entry.EntryType}, Время: {entry.TimeGenerated}, Сообщение: {entry.Message}\n");
